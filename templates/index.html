@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Conversation Interface</title>
+    <style>
+
+        .jd-config {
+            background-color: #f8f9fa;
+            padding: 20px;
+            border-radius: 5px;
+            margin: 20px 0;
+            display: none;
+        }
+
+        .jd-config.active {
+            display: block;
+        }
+
+        .hr-config {
+            background-color: #f8f9fa;
+            padding: 20px;
+            border-radius: 5px;
+            margin: 20px 0;
+            display: none;
+        }
+        
+        .hr-config.active {
+            display: block;
+        }
+        
+        .input-group {
+            margin-bottom: 15px;
+        }
+        
+        .input-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        
+        .input-group input {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+        
+        .save-config {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        
+        .save-config:hover {
+            background-color: #45a049;
+        }
+
+        .teacher-config, .hr-config {
+            background-color: #f8f9fa;
+            padding: 20px;
+            border-radius: 5px;
+            margin: 20px 0;
+            display: none;
+        }
+        
+        .teacher-config.active, .hr-config.active {
+            display: block;
+        }
+        
+        .topic-selector {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+            margin-bottom: 10px;
+        }
+
+        .custom-topic {
+            display: none;
+        }
+
+        .custom-topic.active {
+            display: block;
+        }
+    
+
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background-color: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .role-selector {
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        select {
+            padding: 10px;
+            font-size: 16px;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+            width: 200px;
+        }
+        .chat-container {
+            margin: 20px 0;
+            max-height: 400px;
+            overflow-y: auto;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .message {
+            margin: 10px 0;
+            padding: 10px;
+            border-radius: 5px;
+            word-wrap: break-word;
+        }
+        .user-message {
+            background-color: #e3f2fd;
+            margin-left: 20%;
+        }
+        .ai-message {
+            background-color: #f5f5f5;
+            margin-right: 20%;
+        }
+        .error-message {
+            background-color: #ffebee;
+            color: #c62828;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+        }
+        button {
+            padding: 15px 30px;
+            font-size: 18px;
+            cursor: pointer;
+            background-color: #2196F3;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            margin: 10px;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #1976D2;
+        }
+        button:disabled {
+            background-color: #cccccc;
+        }
+        #status {
+            margin: 20px;
+            font-style: italic;
+            color: #666;
+        }
+        .role-description {
+            text-align: center;
+            margin: 20px 0;
+            padding: 15px;
+            background-color: #f0f7ff;
+            border-radius: 5px;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>AI Conversation Interface</h1>
+        
+        <div class="role-selector">
+            <select id="roleSelect" onchange="updateRoleDescription()">
+                <option value="hr_interviewer">HR Interviewer</option>
+                <option value="english_teacher">English Teacher</option>
+                <option value="jd_interviewer">JD Interviewer</option>
+            </select>
+        </div>
+
+        <div id="hrConfig" class="hr-config">
+            <h3>HR Interview Configuration</h3>
+            <div class="input-group">
+                <label for="companyName">Company Name:</label>
+                <input type="text" id="companyName"  placeholder="Enter company name">
+            </div>
+            <div class="input-group">
+                <label for="jobProfile">Job Profile:</label>
+                <input type="text" id="jobProfile"  placeholder="Enter job profile">
+            </div>
+            <div class="input-group">
+                <label for="candidateName">Candidate Name:</label>
+                <input type="text" id="candidateName"  placeholder="Enter candidate name">
+            </div>
+            <!-- <div class="input-group">
+                <label for="interviewerName">Interviewer Name:</label>
+                <input type="text" id="interviewerName" value="Sivi" placeholder="Enter interviewer name">
+            </div> -->
+            <button class="save-config" onclick="saveHRConfig()">Submit</button>
+        </div>
+
+        <!-- Add English Teacher Configuration Section -->
+        <div id="teacherConfig" class="teacher-config">
+            <h3>English Learning Configuration</h3>
+            <div class="input-group">
+                <label for="topicSelect">Select Topic:</label>
+                <select id="topicSelect" class="topic-selector" onchange="handleTopicChange()">
+                    <option value="general">General Conversation</option>
+                    <option value="business">Business English</option>
+                    <option value="travel">Travel & Tourism</option>
+                    <option value="academic">Academic English</option>
+                    <option value="daily">Daily Life</option>
+                    <option value="custom">Custom Topic</option>
+                </select>
+            </div>
+            <div id="customTopicInput" class="input-group custom-topic">
+                <label for="customTopic">Enter Custom Topic:</label>
+                <input type="text" id="customTopic" placeholder="Enter your topic">
+            </div>
+            <div class="input-group">
+                <label for="proficiencyLevel">Proficiency Level:</label>
+                <select id="proficiencyLevel" class="topic-selector">
+                    <option value="beginner">Beginner</option>
+                    <option value="intermediate">Intermediate</option>
+                    <option value="advanced">Advanced</option>
+                </select>
+            </div>
+            <button class="save-config" onclick="saveTeacherConfig()">Submit</button>
+        </div>
+
+        <div id="jdConfig" class="jd-config">
+            <h3>JD Interview Configuration</h3>
+            <div class="input-group">
+                <label for="jobDescription">Job Description:</label>
+                <textarea id="jobDescription" placeholder="Enter Job Description" rows="6" cols = 94 class="form-control"></textarea>
+            </div>
+            <button class="save-config" onclick="saveJDConfig()">Submit</button>
+        </div>
+
+        <!-- Keep existing role descriptions -->
+        <div id="hrDescription" class="role-description">
+            Talk to Sivi, an HR representative from <span id="company">Google</span>, 
+            for a mock interview for the <span id="profile">AI Engineer</span> position.
+        </div>
+
+        <div id="teacherDescription" class="role-description">
+            Practice English conversation on <span id="currentTopic">general topics</span> 
+            at <span id="currentLevel">intermediate</span> level with an experienced language teacher.
+        </div>
+
+        <div id="JDDescription" class="role-description">
+            JD Interviewer
+        </div>
+
+        <p>Click the button to start/stop recording.</p>
+        <button id="recordButton">Start Recording</button>
+        <div id="status">Click the button to start recording</div>
+        <div class="chat-container" id="chatContainer"></div>
+    </div>
+
+    <script>
+        let mediaRecorder;
+        let audioChunks = [];
+        const recordButton = document.getElementById('recordButton');
+        const status = document.getElementById('status');
+        const chatContainer = document.getElementById('chatContainer');
+        const sessionId = Date.now().toString();
+
+        function updateRoleDescription() {
+            const role = document.getElementById('roleSelect').value;
+            const hrConfig = document.getElementById('hrConfig');
+            const teacherConfig = document.getElementById('teacherConfig');
+            const jdConfig = document.getElementById('jdConfig');
+            
+            // Toggle config sections
+            hrConfig.classList.toggle('active', role === 'hr_interviewer');
+            teacherConfig.classList.toggle('active', role === 'english_teacher');
+            jdConfig.classList.toggle('active', role === 'jd_interviewer');
+            
+            // Toggle descriptions
+            document.getElementById('hrDescription').style.display = 
+                role === 'hr_interviewer' ? 'block' : 'none';
+            document.getElementById('teacherDescription').style.display = 
+                role === 'english_teacher' ? 'block' : 'none';
+            document.getElementById('JDDescription').style.display = 
+                role === 'jd_interviewer' ? 'block' : 'none';
+        }
+
+
+
+        function handleTopicChange() {
+                const topicSelect = document.getElementById('topicSelect');
+                const customTopicDiv = document.getElementById('customTopicInput');
+                customTopicDiv.classList.toggle('active', topicSelect.value === 'custom');
+            }
+
+        function saveHRConfig() {
+                const company = document.getElementById('companyName').value;
+                const profile = document.getElementById('jobProfile').value;
+                const candidate = document.getElementById('candidateName').value;
+                const interviewer = document.getElementById('interviewerName').value;
+
+                // Update the description
+                document.getElementById('company').textContent = company;
+                document.getElementById('profile').textContent = profile;
+                document.getElementById('interviewer').textContent = interviewer;
+
+                // Show success message
+                status.textContent = 'Configuration saved successfully!';
+                setTimeout(() => {
+                    status.textContent = 'Ready to record';
+                }, 2000);
+            }
+
+            function saveTeacherConfig() {
+                const topicSelect = document.getElementById('topicSelect');
+                const customTopic = document.getElementById('customTopic');
+                const proficiencyLevel = document.getElementById('proficiencyLevel');
+
+                const selectedTopic = topicSelect.value === 'custom' ? 
+                    customTopic.value : 
+                    topicSelect.options[topicSelect.selectedIndex].text;
+
+                document.getElementById('currentTopic').textContent = selectedTopic;
+                document.getElementById('currentLevel').textContent = proficiencyLevel.value;
+
+                status.textContent = 'Configuration saved successfully!';
+                setTimeout(() => {
+                    status.textContent = 'Ready to record';
+                }, 2000);
+            }
+
+            function saveJDConfig() {
+                const jobDescription = document.getElementById('jobDescription').value;
+
+                // Update the description
+                document.getElementById('JDDescription').textContent = 
+                    `Interview for position with provided job description`;
+
+                // Show success message
+                status.textContent = 'Configuration saved successfully!';
+                setTimeout(() => {
+                    status.textContent = 'Ready to record';
+                }, 2000);
+            }
+
+        // Initialize with default role description
+        updateRoleDescription();
+
+        function addMessage(text, isUser, isError = false) {
+            if (!text) return; // Don't add empty messages
+            
+            const messageDiv = document.createElement('div');
+            if (isError) {
+                messageDiv.className = 'error-message';
+                messageDiv.textContent = text;
+            } else {
+                messageDiv.className = `message ${isUser ? 'user-message' : 'ai-message'}`;
+                messageDiv.textContent = isUser ? `You: ${text}` : `AI: ${text}`;
+            }
+            chatContainer.appendChild(messageDiv);
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+        }
+
+        async function startRecording() {
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ 
+                    audio: {
+                        channelCount: 1,
+                        sampleRate: 16000
+                    }
+                });
+                
+                mediaRecorder = new MediaRecorder(stream);
+                audioChunks = [];
+
+                mediaRecorder.addEventListener('dataavailable', event => {
+                    audioChunks.push(event.data);
+                });
+
+                mediaRecorder.addEventListener('stop', processAudio);
+
+                mediaRecorder.start();
+                recordButton.textContent = 'Stop Recording';
+                status.textContent = 'Recording... (Click to stop)';
+
+            } catch (error) {
+                console.error('Error accessing microphone:', error);
+                status.textContent = 'Error accessing microphone';
+                addMessage('Could not access microphone. Please check your permissions and try again.', false, true);
+            }
+        }
+
+        async function processAudio() {
+            status.textContent = 'Processing...';
+            
+            try {
+                const audioContext = new AudioContext();
+                const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
+                const arrayBuffer = await audioBlob.arrayBuffer();
+                const audioBuffer = await audioContext.decodeAudioData(arrayBuffer);
+                
+                const wavBuffer = audioBufferToWav(audioBuffer);
+                const wavBlob = new Blob([wavBuffer], { type: 'audio/wav' });
+                
+                const formData = new FormData();
+                formData.append('audio', wavBlob, 'recording.wav');
+                formData.append('session_id', sessionId);
+                formData.append('role', document.getElementById('roleSelect').value);
+
+                // Add HR configuration if HR role is selected
+                if (document.getElementById('roleSelect').value === 'hr_interviewer') {
+                    const hrConfig = {
+                        company: document.getElementById('companyName').value,
+                        job_profile: document.getElementById('jobProfile').value,
+                        candidate_name: document.getElementById('candidateName').value,
+                        // interviewer_name: document.getElementById('interviewerName').value
+                    };
+                    formData.append('hr_config', JSON.stringify(hrConfig));
+
+                }else if (document.getElementById('roleSelect').value === 'english_teacher') {
+                        const topicSelect = document.getElementById('topicSelect');
+                        const customTopic = document.getElementById('customTopic');
+                        const teacherConfig = {
+                            topic: topicSelect.value === 'custom' ? customTopic.value : topicSelect.value,
+                            proficiency_level: document.getElementById('proficiencyLevel').value
+                        };
+                        formData.append('teacher_config', JSON.stringify(teacherConfig));
+
+                }else if (document.getElementById('roleSelect').value === 'jd_interviewer') {
+                    const JDConfig = {
+                        jobDescription: document.getElementById('jobDescription').value,
+                    };
+                    formData.append('jd_config', JSON.stringify(JDConfig));
+                }
+                
+
+                const response = await fetch('/process-audio', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                const data = await response.json();
+
+                if (data.error) {
+                    addMessage(data.error, false, true);
+                    status.textContent = 'Ready to record';
+                    return;
+                }
+
+                if (data.user_text && data.ai_response) {
+                    addMessage(data.user_text, true);
+                    addMessage(data.ai_response, false);
+                    
+                    // Play AI response
+                    const audio = new Audio(data.audio_path + '?t=' + new Date().getTime());
+                    await audio.play();
+                }
+
+                status.textContent = 'Ready to record';
+
+            } catch (error) {
+                console.error('Error processing audio:', error);
+                status.textContent = 'Error processing audio';
+                addMessage('An error occurred while processing your speech. Please try again.', false, true);
+            }
+        }
+
+        recordButton.addEventListener('click', async () => {
+            if (mediaRecorder && mediaRecorder.state === 'recording') {
+                mediaRecorder.stop();
+                recordButton.textContent = 'Start Recording';
+                mediaRecorder.stream.getTracks().forEach(track => track.stop());
+            } else {
+                await startRecording();
+            }
+        });
+
+        function audioBufferToWav(buffer) {
+            const numChannels = buffer.numberOfChannels;
+            const sampleRate = buffer.sampleRate;
+            const format = 1; // PCM
+            const bitDepth = 16;
+            
+            const bytesPerSample = bitDepth / 8;
+            const blockAlign = numChannels * bytesPerSample;
+            
+            const headerLength = 44;
+            const dataLength = buffer.length * blockAlign;
+            const fileLength = headerLength + dataLength;
+            
+            const arrayBuffer = new ArrayBuffer(fileLength);
+            const dataView = new DataView(arrayBuffer);
+            
+            writeString(dataView, 0, 'RIFF');
+            dataView.setUint32(4, fileLength - 8, true);
+            writeString(dataView, 8, 'WAVE');
+            writeString(dataView, 12, 'fmt ');
+            dataView.setUint32(16, 16, true);
+            dataView.setUint16(20, format, true);
+            dataView.setUint16(22, numChannels, true);
+            dataView.setUint32(24, sampleRate, true);
+            dataView.setUint32(28, sampleRate * blockAlign, true);
+            dataView.setUint16(32, blockAlign, true);
+            dataView.setUint16(34, bitDepth, true);
+            writeString(dataView, 36, 'data');
+            dataView.setUint32(40, dataLength, true);
+            
+            const channels = [];
+            for (let i = 0; i < numChannels; i++) {
+                channels.push(buffer.getChannelData(i));
+            }
+            
+            let offset = 44;
+            for (let i = 0; i < buffer.length; i++) {
+                for (let channel = 0; channel < numChannels; channel++) {
+                    const sample = Math.max(-1, Math.min(1, channels[channel][i]));
+                    const int16 = sample < 0 ? sample * 0x8000 : sample * 0x7FFF;
+                    dataView.setInt16(offset, int16, true);
+                    offset += 2;
+                }
+            }
+            
+            return arrayBuffer;
+        }
+
+        function writeString(dataView, offset, string) {
+            for (let i = 0; i < string.length; i++) {
+                dataView.setUint8(offset + i, string.charCodeAt(i));
+            }
+        }
+    </script>
+</body>
+</html>
