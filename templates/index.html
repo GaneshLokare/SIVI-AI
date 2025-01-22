@@ -6,6 +6,7 @@
     <title>AI Conversation Interface</title>
     <style>
 
+
         .jd-config {
             background-color: #f8f9fa;
             padding: 20px;
@@ -15,6 +16,18 @@
         }
 
         .jd-config.active {
+            display: block;
+        }
+
+        .cv-config {
+            background-color: #f8f9fa;
+            padding: 20px;
+            border-radius: 5px;
+            margin: 20px 0;
+            display: none;
+        }
+
+        .cv-config.active {
             display: block;
         }
 
@@ -93,16 +106,60 @@
 
         body {
             font-family: Arial, sans-serif;
-            max-width: 800px;
+            max-width: 900px;
             margin: 0 auto;
-            padding: 20px;
+            padding: 10px;
             background-color: #f5f5f5;
+            position: relative;
         }
+
+        /* Camera feed container styles */
+        .camera-container {
+            position: fixed;
+            top: 20px;
+            right: 10px;
+            background: #ffffff;
+            padding: 10px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            z-index: 1000;
+        }
+
+        .camera-feed {
+            width: 340px;
+            height: 260px;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            margin-bottom: 10px;
+        }
+
+        .camera-controls {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+        }
+
+        .camera-button {
+            padding: 8px 16px;
+            font-size: 14px;
+            cursor: pointer;
+            background-color: #2196F3;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            transition: background-color 0.3s;
+        }
+
+        .camera-button:hover {
+            background-color: #1976D2;
+        }
+
         .container {
             background-color: white;
             padding: 30px;
             border-radius: 10px;
             box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-right: 60px;
         }
         .role-selector {
             margin-bottom: 20px;
@@ -177,14 +234,26 @@
     </style>
 </head>
 <body>
+
+    <div class="camera-container">
+        <h3>Camera Feed</h3>
+        <img src="/video_feed" class="camera-feed" alt="Camera Feed">
+        <div class="camera-controls">
+            <button class="camera-button" onclick="startvidRecording()">Start vid Recording</button>
+            <button class="camera-button" onclick="stopvidRecording()">Stop vid Recording</button>
+        </div>
+    </div>
+
     <div class="container">
         <h1>AI Conversation Interface</h1>
+
         
         <div class="role-selector">
             <select id="roleSelect" onchange="updateRoleDescription()">
                 <option value="hr_interviewer">HR Interviewer</option>
                 <option value="english_teacher">English Teacher</option>
                 <option value="jd_interviewer">JD Interviewer</option>
+                <option value="cv_interviewer">CV Interviewer</option>
             </select>
         </div>
 
@@ -242,9 +311,18 @@
             <h3>JD Interview Configuration</h3>
             <div class="input-group">
                 <label for="jobDescription">Job Description:</label>
-                <textarea id="jobDescription" placeholder="Enter Job Description" rows="6" cols = 94 class="form-control"></textarea>
+                <textarea id="jobDescription" placeholder="Enter Job Description" rows="4" cols = 94 class="form-control"></textarea>
             </div>
             <button class="save-config" onclick="saveJDConfig()">Submit</button>
+        </div>
+
+        <div id="cvConfig" class="cv-config">
+            <h3>CV Interview Configuration</h3>
+            <div class="input-group">
+                <label for="Resume">Resume:</label>
+                <textarea id="Resume" placeholder="Enter Resume" rows="4" cols = 94 class="form-control"></textarea>
+            </div>
+            <button class="save-config" onclick="savecvConfig()">Submit</button>
         </div>
 
         <!-- Keep existing role descriptions -->
@@ -262,10 +340,19 @@
             JD Interviewer
         </div>
 
+        <div id="Resume" class="role-description">
+            Resume Interviewer
+        </div>
+
         <p>Click the button to start/stop recording.</p>
         <button id="recordButton">Start Recording</button>
         <div id="status">Click the button to start recording</div>
         <div class="chat-container" id="chatContainer"></div>
+
+        <button id="clearButton">Clear Chat</button>
+
+       
+
     </div>
 
     <script>
@@ -281,11 +368,14 @@
             const hrConfig = document.getElementById('hrConfig');
             const teacherConfig = document.getElementById('teacherConfig');
             const jdConfig = document.getElementById('jdConfig');
+            const cvConfig = document.getElementById('cvConfig');
             
             // Toggle config sections
             hrConfig.classList.toggle('active', role === 'hr_interviewer');
             teacherConfig.classList.toggle('active', role === 'english_teacher');
             jdConfig.classList.toggle('active', role === 'jd_interviewer');
+            cvConfig.classList.toggle('active', role === 'cv_interviewer');
+            
             
             // Toggle descriptions
             document.getElementById('hrDescription').style.display = 
@@ -294,6 +384,8 @@
                 role === 'english_teacher' ? 'block' : 'none';
             document.getElementById('JDDescription').style.display = 
                 role === 'jd_interviewer' ? 'block' : 'none';
+            document.getElementById('Resume').style.display =
+                role === 'cv_interviewer' ? 'block' : 'none';
         }
 
 
@@ -345,7 +437,7 @@
 
                 // Update the description
                 document.getElementById('JDDescription').textContent = 
-                    `Interview for position with provided job description`;
+                    `Interview for position with requirements: ${jobDescription}`;
 
                 // Show success message
                 status.textContent = 'Configuration saved successfully!';
@@ -353,6 +445,33 @@
                     status.textContent = 'Ready to record';
                 }, 2000);
             }
+
+            function savecvConfig() {
+                const Resume = document.getElementById('Resume').value;
+
+                // Update the description
+                document.getElementById('Resume').textContent = 
+                    `Interview for position with Resume`;
+
+                // Show success message
+                status.textContent = 'Configuration saved successfully!';
+                setTimeout(() => {
+                    status.textContent = 'Ready to record';
+                }, 2000);
+            }
+
+            function startvidRecording() {
+                fetch('/start_vid_recording', { method: 'POST' })
+                    .then(response => response.text())
+                    .then(alert);
+            }
+
+            function stopvidRecording() {
+                fetch('/stop_vid_recording', { method: 'POST' })
+                    .then(response => response.text())
+                    .then(alert);
+            }
+
 
         // Initialize with default role description
         updateRoleDescription();
@@ -539,6 +658,30 @@
                 dataView.setUint8(offset + i, string.charCodeAt(i));
             }
         }
+
+        const clearButton = document.getElementById('clearButton');
+
+        clearButton.addEventListener('click', async () => {
+            try {
+                const response = await fetch('/clear_history', {
+                    method: 'POST'
+                });
+                
+                if (response.ok) {
+                    // Clear the chat container
+                    chatContainer.innerHTML = '';
+                    status.textContent = 'Chat history cleared';
+                    setTimeout(() => {
+                        status.textContent = 'Ready to record';
+                    }, 2000);
+                } else {
+                    throw new Error('Failed to clear chat history');
+                }
+            } catch (error) {
+                console.error('Error clearing chat:', error);
+                status.textContent = 'Error clearing chat history';
+            }
+        });
     </script>
 </body>
 </html>
