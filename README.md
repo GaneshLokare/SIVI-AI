@@ -1,8 +1,8 @@
 # SIVI-AI
 
-## AI-Powered Video Interview Assistant
+## AI-Powered Interview Assistant
 
-A Flask-based web application that provides an interactive video interview experience with AI-powered conversation capabilities. The application supports video recording, audio processing, and real-time AI responses in different roles.
+A Flask-based web application that provides an interactive interview experience with AI-powered conversation capabilities. The application supports video recording, audio processing, and real-time AI responses in different roles.
 
 ## Features
 
