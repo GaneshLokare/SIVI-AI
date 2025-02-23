@@ -2,19 +2,18 @@
 
 ## AI-Powered Interview Assistant
 
-A Flask-based web application that provides an interactive interview experience with AI-powered conversation capabilities. The application supports video recording, audio processing, and real-time AI responses in different roles.
+A Flask-based web application that provides an interactive interview experience with AI-powered conversation capabilities. The application supports real-time AI responses in different roles.
 
 ## Features
 
-- Real-time video streaming from webcam
 - Audio recording and processing
 - AI-powered conversation with multiple roles:
+  - English Language Teacher
   - HR Interviewer
-  - Teacher
   - Job Description Interviewer
   - Resume Interviewer
   - Custom configurations support
-- Video and audio recording with synchronized output
+- Audio recording with synchronized output
 - Chat history management
 - Text-to-speech conversion for AI responses
 
@@ -23,15 +22,14 @@ A Flask-based web application that provides an interactive interview experience 
 Before running this application, make sure you have the following installed:
 - Python 3.8+
 - FFmpeg (for audio/video processing)
-- OpenCV
 - PyAudio
 
 ## Installation
 
 1. Clone the repository:
 ```bash
-git clone <repository-url>
-cd <project-directory>
+git clone https://github.com/GaneshLokare/SIVI-AI.git
+cd SIVI-AI
 ```
 
 2. Create a virtual environment and activate it:
@@ -86,19 +84,16 @@ http://localhost:5000
 ```
 
 3. Features:
-   - Click the video recording button to start/stop recording
+   - Click the recording button to start/stop recording
    - Speak into your microphone for AI interaction
    - Select different AI roles for varied conversation experiences
    - View and clear chat history as needed
-   - Download recorded sessions with synchronized audio and video
+   
 
 ## API Endpoints
 
 - `GET /` - Main application interface
-- `GET /video_feed` - Video streaming endpoint
 - `POST /process-audio` - Audio processing and AI response
-- `POST /start_vid_recording` - Start video recording
-- `POST /stop_vid_recording` - Stop video recording
 - `POST /clear_history` - Clear chat history
 
 ## Configuration Options
@@ -120,7 +115,6 @@ flask run --debug
 
 Major dependencies include:
 - Flask
-- OpenCV (cv2)
 - PyAudio
 - python-dotenv
 - threading
@@ -130,14 +124,10 @@ Major dependencies include:
 
 Common issues and solutions:
 
-1. Video camera not working:
-   - Check if another application is using the camera
-   - Verify camera permissions
-
-2. Audio recording issues:
+1. Audio recording issues:
    - Check microphone permissions
    - Verify PyAudio installation
 
-3. FFmpeg errors:
+2. FFmpeg errors:
    - Ensure FFmpeg is properly installed and accessible in system PATH
 
