@@ -8,10 +8,11 @@ class JDInterviewer(BaseRole):
         if config:
             try:
                 jd_config = json.loads(config)
-                job_description = jd_config['jobDescription']
-                candidate_name = jd_config['candidate_name']
-        
-                return SystemMessage(content=f"""As an expert interviewer specializing in technical roles, your name is Sinamika. You are tasked with conducting a comprehensive and engaging interview with a candidate named {candidate_name}, based on the following Job Description:  
+                if  jd_config["jobDescription"] and  jd_config["jd_candidate"]:
+                    job_description = jd_config['jobDescription']
+                    candidate_name = jd_config['jd_candidate']
+            
+                    return SystemMessage(content=f"""As an expert interviewer specializing in technical roles, your name is Sinamika. You are tasked with conducting a comprehensive and engaging interview with a candidate named {candidate_name}, based on the following Job Description:  
 
 "{job_description}"
 
@@ -31,10 +32,13 @@ Remember to document key points from candidate's responses for later evaluation,
 
 ### Conclusion:
 Conclude the interview by thanking candidate for his time and insights, encouraging him to ask any questions he may have about the role or the company.""")
+                else:
+                    return self._get_default_message()
+            
             except (json.JSONDecodeError, KeyError):
                 # Fallback to default if config is invalid
                 return self._get_default_message()
         return self._get_default_message()
     
     def _get_default_message(self):
-        return SystemMessage(content=f""" Only response please provide the job description and name.""")
+        return SystemMessage(content=f""" Only response 'please provide the job description and name'""")

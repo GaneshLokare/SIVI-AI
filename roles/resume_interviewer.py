@@ -7,11 +7,14 @@ class ResumeInterviewer(BaseRole):
     def get_system_message(self, config=None):
         if config:
             try:
+                
                 cv_config = json.loads(config)
-                Resume = cv_config['Resume']
-                candidate_name = cv_config['cv_candidate']
-        
-                return SystemMessage(content=f"""As an expert interviewer specializing in technical roles, your name is Sinamika. You are tasked with conducting a comprehensive and engaging interview with a candidate named {candidate_name}, based on the following Resume:  
+
+                if  cv_config["Resume"] and  cv_config["cv_candidate"]:
+                    Resume = cv_config['Resume']
+                    candidate_name = cv_config['cv_candidate']
+            
+                    return SystemMessage(content=f"""As an expert interviewer specializing in technical roles, your name is Sinamika. You are tasked with conducting a comprehensive and engaging interview with a candidate named {candidate_name}, based on the following Resume:  
 
 "{Resume}"
 
@@ -31,10 +34,13 @@ Remember to document key points from candidate's responses for later evaluation,
 
 ### Conclusion:
 Conclude the interview by thanking candidate for his time and insights, encouraging him to ask any questions he may have about the role or the company.""")
+                else:
+                    return self._get_default_message()
+            
             except (json.JSONDecodeError, KeyError):
                 # Fallback to default if config is invalid
                 return self._get_default_message()
-        return self._get_default_message()
+
     
     def _get_default_message(self):
-        return SystemMessage(content=f""" Only response please provide the resume and name.""")
+        return SystemMessage(content=f""" Only response 'please provide the resume and name.'""")

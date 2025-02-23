@@ -87,7 +87,10 @@ def process_audio():
         jd_config = request.form.get('jd_config')
         cv_config = request.form.get('cv_config')
 
-        print(cv_config)
+        # print(f"hr_config: {hr_config}")
+        # print(f"teacher_config: {teacher_config}")
+        # print(f"jd_config: {jd_config}")
+        # print(f"cv_config: {cv_config}")
         response = chat_manager.get_response(session_id, role, user_text, hr_config or teacher_config or jd_config or cv_config)
         
         # Convert response to audio
