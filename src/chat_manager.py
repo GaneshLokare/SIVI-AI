@@ -5,11 +5,11 @@ from roles.hr_interviewer import HRInterviewer
 from roles.english_teacher import EnglishTeacher
 from roles.jd_interviewer import JDInterviewer
 from roles.resume_interviewer import ResumeInterviewer
-from dotenv import load_dotenv
+
 
 class ChatManager:
     def __init__(self):
-        self.model = ChatOpenAI(model="gpt-4o-mini")
+        self.model = ChatOpenAI(model="gpt-4o-mini" )
         self.chat_histories = {}
         self.roles = {
             'hr_interviewer': HRInterviewer(),
@@ -38,7 +38,7 @@ class ChatManager:
         self.chat_histories[session_id]['messages'].append(
             AIMessage(content=response)
         )
-        print(self.chat_histories)
+        #print(self.chat_histories)
         
         return response
     
