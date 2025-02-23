@@ -133,14 +133,7 @@ Common issues and solutions:
 
 ## UI Screenshots
 
-### English Language Teacher
-static/images/teacher.png
-
-### HR Interviewer
-static/images/hr.png
-
-### Job Description Interviewer
-static/images/jd.png
-
-### Resume Interviewer
-static/images/cv.png
+![English Language Teacher](static/images/teacher.png)
+![HR Interviewer](static/images/hr.png)
+![Job Description Interviewer](static/images/jd.png)
+![Resume Interviewer](static/images/cv.png)
